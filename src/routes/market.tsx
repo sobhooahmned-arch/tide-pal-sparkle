@@ -167,46 +167,45 @@ function MarketPage() {
               )}
             </section>
           )}
-
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => navigate({ to: "/deposit" })}
-              className="rounded-2xl bg-primary px-4 py-3 text-right font-bold text-primary-foreground transition hover:opacity-90"
-            >
-              <span className="block text-xs font-medium opacity-80">إيداع</span>
-              إضافة رصيد ↓
-            </button>
-            <button
-              onClick={() => navigate({ to: "/withdraw" })}
-              className="rounded-2xl border border-accent/60 bg-accent/10 px-4 py-3 text-right font-bold text-accent transition hover:bg-accent/20"
-            >
-              <span className="block text-xs font-medium opacity-80">سحب</span>
-              تحويل للحساب ↑
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/packages/$group", params: { group: "small" } })}
-              className="flex min-h-14 items-center gap-2 justify-center whitespace-normal rounded-lg bg-secondary px-4 py-3 text-center font-bold transition hover:opacity-90"
-            >
-              <WalletCards aria-hidden="true" />
-              باقات الاستثمار الصغيرة
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/packages/$group", params: { group: "large" } })}
-              className="flex min-h-14 items-center gap-2 justify-center whitespace-normal rounded-lg border border-border bg-transparent px-4 py-3 text-center font-bold transition hover:bg-accent"
-            >
-              <Landmark aria-hidden="true" />
-              باقات الاستثمار الضخمة
-            </button>
-          </div>
         </div>
       </header>
 
       <div className="mx-auto max-w-5xl px-4 pt-5">
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => navigate({ to: "/deposit" })}
+            className="rounded-2xl bg-primary px-4 py-3 text-right font-bold text-primary-foreground transition hover:opacity-90"
+          >
+            <span className="block text-xs font-medium opacity-80">إيداع</span>
+            إضافة رصيد ↓
+          </button>
+          <button
+            onClick={() => navigate({ to: "/withdraw" })}
+            className="rounded-2xl border border-accent/60 bg-accent/10 px-4 py-3 text-right font-bold text-accent transition hover:bg-accent/20"
+          >
+            <span className="block text-xs font-medium opacity-80">سحب</span>
+            تحويل للحساب ↑
+          </button>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/packages/$group", params: { group: "small" } })}
+            className="flex min-h-14 items-center gap-2 justify-center whitespace-normal rounded-lg bg-secondary px-4 py-3 text-center font-bold transition hover:opacity-90"
+          >
+            <WalletCards aria-hidden="true" />
+            باقات الاستثمار الصغيرة
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/packages/$group", params: { group: "large" } })}
+            className="flex min-h-14 items-center gap-2 justify-center whitespace-normal rounded-lg border border-border bg-transparent px-4 py-3 text-center font-bold transition hover:bg-accent"
+          >
+            <Landmark aria-hidden="true" />
+            باقات الاستثمار الضخمة
+          </button>
+        </div>
         {notice && (
           <p className="mb-4 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-primary">
             {notice}
