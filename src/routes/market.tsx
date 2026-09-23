@@ -186,48 +186,23 @@ function MarketPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <Button
+            <button
               type="button"
-              variant={openPackages === "small" ? "default" : "secondary"}
-              aria-expanded={openPackages === "small"}
-              onClick={() => setOpenPackages((current) => (current === "small" ? null : "small"))}
-              className="h-auto min-h-14 justify-between whitespace-normal rounded-lg px-4 py-3 text-right font-bold"
+              onClick={() => navigate({ to: "/packages/$group", params: { group: "small" } })}
+              className="flex min-h-14 items-center gap-2 justify-center whitespace-normal rounded-lg bg-secondary px-4 py-3 text-center font-bold transition hover:opacity-90"
             >
-              <span className="flex items-center gap-2">
-                <WalletCards aria-hidden="true" />
-                باقات الاستثمار الصغيرة
-              </span>
-              <ChevronDown
-                aria-hidden="true"
-                className={`transition-transform ${openPackages === "small" ? "rotate-180" : ""}`}
-              />
-            </Button>
-            <Button
+              <WalletCards aria-hidden="true" />
+              باقات الاستثمار الصغيرة
+            </button>
+            <button
               type="button"
-              variant={openPackages === "large" ? "default" : "outline"}
-              aria-expanded={openPackages === "large"}
-              onClick={() => setOpenPackages((current) => (current === "large" ? null : "large"))}
-              className="h-auto min-h-14 justify-between whitespace-normal rounded-lg px-4 py-3 text-right font-bold"
+              onClick={() => navigate({ to: "/packages/$group", params: { group: "large" } })}
+              className="flex min-h-14 items-center gap-2 justify-center whitespace-normal rounded-lg border border-border bg-transparent px-4 py-3 text-center font-bold transition hover:bg-accent"
             >
-              <span className="flex items-center gap-2">
-                <Landmark aria-hidden="true" />
-                باقات الاستثمار الضخمة
-              </span>
-              <ChevronDown
-                aria-hidden="true"
-                className={`transition-transform ${openPackages === "large" ? "rotate-180" : ""}`}
-              />
-            </Button>
+              <Landmark aria-hidden="true" />
+              باقات الاستثمار الضخمة
+            </button>
           </div>
-
-          {openPackages && (
-            <InvestmentPackages
-              group={openPackages}
-              packages={INVESTMENT_PACKAGES[openPackages]}
-              activeAmount={sub?.amount ?? null}
-              onSubscribe={handleSubscribe}
-            />
-          )}
         </div>
       </header>
 
