@@ -8,11 +8,7 @@ import {
 } from "lucide-react";
 import { clearStoredUser, getStoredUser, type StoredUser } from "@/lib/auth";
 import { createStocks, fmt, tick, toPath, type Stock } from "@/lib/market";
-import {
-  getBalance,
-  userRequests,
-  type MoneyRequest,
-} from "@/lib/store";
+import { getBalance } from "@/lib/store";
 import {
   currentProfit,
   formatRemaining,
@@ -49,8 +45,6 @@ function MarketPage() {
   const [user, setUser] = useState<StoredUser | null>(null);
   const [stocks, setStocks] = useState<Stock[]>(() => createStocks());
   const [balance, setBalance] = useState(0);
-  const [reqs, setReqs] = useState<MoneyRequest[]>([]);
-  const [showReqs, setShowReqs] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [sub, setSub] = useState<Subscription | null>(null);
   const [now, setNow] = useState(() => Date.now());
@@ -67,7 +61,6 @@ function MarketPage() {
     }
     setUser(u);
     setBalance(getBalance(u.identifier));
-    setReqs(userRequests(u.identifier));
     setSub(getSubscription(u.identifier));
   }, [navigate]);
 
@@ -86,7 +79,6 @@ function MarketPage() {
     if (!user) return;
     const id = window.setInterval(() => {
       setBalance(getBalance(user.identifier));
-      setReqs(userRequests(user.identifier));
     }, 2000);
     return () => window.clearInterval(id);
   }, [user]);
@@ -120,7 +112,7 @@ function MarketPage() {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setShowReqs((v) => !v)}
+                onClick={() => navigate({ to: "/requests" })}
                 className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
               >
                 طلباتي
@@ -136,37 +128,6 @@ function MarketPage() {
               </button>
             </div>
           </div>
-
-          {showReqs && (
-            <section className="rounded-2xl border border-border bg-card p-3">
-              <h2 className="text-sm font-bold">طلبات الإيداع</h2>
-              {reqs.filter((t) => t.kind === "deposit").length === 0 ? (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  لا توجد طلبات إيداع حتى الآن.
-                </p>
-              ) : (
-                <ul className="mt-2 space-y-2">
-                  {reqs
-                    .filter((t) => t.kind === "deposit")
-                    .map((t) => (
-                      <li
-                        key={t.id}
-                        className="flex items-center justify-between rounded-xl border border-border bg-background px-4 py-3 text-sm"
-                      >
-                        <span className="text-primary">إيداع {fmt(t.amount)} ج.م</span>
-                        <span className="text-xs text-muted-foreground">
-                          {t.status === "pending"
-                            ? "قيد المراجعة"
-                            : t.status === "approved"
-                              ? "تم التنفيذ"
-                              : "مرفوض"}
-                        </span>
-                      </li>
-                    ))}
-                </ul>
-              )}
-            </section>
-          )}
         </div>
       </header>
 
