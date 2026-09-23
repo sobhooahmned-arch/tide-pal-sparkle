@@ -301,6 +301,22 @@ function LoginPanel({ onDone }: { onDone: (user: StoredUser) => void }) {
             ? "إنشاء الحساب"
             : "دخول"}
       </button>
+
+      <p className="mt-4 text-center text-sm text-muted-foreground">
+        {mode === "login" ? "ليس لديك حساب؟" : "لديك حساب؟"}{" "}
+        <button
+          type="button"
+          onClick={() => {
+            setMode(mode === "login" ? "signup" : "login");
+            setError(null);
+            setInfo(null);
+            setPassword("");
+          }}
+          className="font-bold text-primary hover:underline"
+        >
+          {mode === "login" ? "إنشاء حساب" : "تسجيل الدخول"}
+        </button>
+      </p>
     </form>
   );
 }
