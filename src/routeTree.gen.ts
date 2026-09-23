@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as DepositRouteImport } from './routes/deposit'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
+import { Route as PackagesGroupRouteImport } from './routes/packages.$group'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const WithdrawRoute = WithdrawRouteImport.update({
   path: '/withdraw',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PackagesGroupRoute = PackagesGroupRouteImport.update({
+  id: '/packages/$group',
+  path: '/packages/$group',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/deposit': typeof DepositRoute
   '/market': typeof MarketRoute
   '/withdraw': typeof WithdrawRoute
+  '/packages/$group': typeof PackagesGroupRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/deposit': typeof DepositRoute
   '/market': typeof MarketRoute
   '/withdraw': typeof WithdrawRoute
+  '/packages/$group': typeof PackagesGroupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,22 @@ export interface FileRoutesById {
   '/deposit': typeof DepositRoute
   '/market': typeof MarketRoute
   '/withdraw': typeof WithdrawRoute
+  '/packages/$group': typeof PackagesGroupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/deposit' | '/market' | '/withdraw'
+  fullPaths:
+    '/' | '/admin' | '/deposit' | '/market' | '/withdraw' | '/packages/$group'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/deposit' | '/market' | '/withdraw'
-  id: '__root__' | '/' | '/admin' | '/deposit' | '/market' | '/withdraw'
+  to: '/' | '/admin' | '/deposit' | '/market' | '/withdraw' | '/packages/$group'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/deposit'
+    | '/market'
+    | '/withdraw'
+    | '/packages/$group'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +94,7 @@ export interface RootRouteChildren {
   DepositRoute: typeof DepositRoute
   MarketRoute: typeof MarketRoute
   WithdrawRoute: typeof WithdrawRoute
+  PackagesGroupRoute: typeof PackagesGroupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +134,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WithdrawRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/packages/$group': {
+      id: '/packages/$group'
+      path: '/packages/$group'
+      fullPath: '/packages/$group'
+      preLoaderRoute: typeof PackagesGroupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +150,7 @@ const rootRouteChildren: RootRouteChildren = {
   DepositRoute: DepositRoute,
   MarketRoute: MarketRoute,
   WithdrawRoute: WithdrawRoute,
+  PackagesGroupRoute: PackagesGroupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
