@@ -1,18 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ChevronDown,
   Clock3,
   Gem,
   Landmark,
   WalletCards,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { clearStoredUser, getStoredUser, type StoredUser } from "@/lib/auth";
 import { createStocks, fmt, tick, toPath, type Stock } from "@/lib/market";
 import {
   getBalance,
-  updateBalance,
   userRequests,
   type MoneyRequest,
 } from "@/lib/store";
@@ -22,34 +19,8 @@ import {
   getSubscription,
   progressOf,
   remainingMs,
-  subscribe,
   type Subscription,
 } from "@/lib/subscription";
-
-type PackageGroup = "small" | "large";
-
-type InvestmentPackage = {
-  amount: number;
-  returnAmount: number;
-  duration: string;
-  durationMs: number;
-};
-
-const MIN = 60 * 1000;
-
-const INVESTMENT_PACKAGES: Record<PackageGroup, InvestmentPackage[]> = {
-  small: [
-    { amount: 300, returnAmount: 3000, duration: "30 دقيقة", durationMs: 30 * MIN },
-    { amount: 700, returnAmount: 7100, duration: "35 دقيقة", durationMs: 35 * MIN },
-    { amount: 1500, returnAmount: 15000, duration: "45 دقيقة", durationMs: 45 * MIN },
-  ],
-  large: [
-    { amount: 5000, returnAmount: 45000, duration: "ساعة واحدة", durationMs: 60 * MIN },
-    { amount: 8000, returnAmount: 72000, duration: "ساعتين", durationMs: 120 * MIN },
-    { amount: 12000, returnAmount: 86000, duration: "ساعتين", durationMs: 120 * MIN },
-    { amount: 20000, returnAmount: 120000, duration: "ساعتين", durationMs: 120 * MIN },
-  ],
-};
 
 export const Route = createFileRoute("/market")({
   ssr: false,
@@ -80,7 +51,6 @@ function MarketPage() {
   const [balance, setBalance] = useState(0);
   const [reqs, setReqs] = useState<MoneyRequest[]>([]);
   const [showReqs, setShowReqs] = useState(false);
-  const [openPackages, setOpenPackages] = useState<PackageGroup | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [sub, setSub] = useState<Subscription | null>(null);
   const [now, setNow] = useState(() => Date.now());
@@ -132,35 +102,6 @@ function MarketPage() {
 
   if (!user) return null;
 
-  function handleSubscribe(pkg: InvestmentPackage) {
-    if (!user) return;
-    if (sub) {
-      setNotice("أنت مشترك بالفعل في باقة، استلم أرباحها الأول.");
-      window.setTimeout(() => setNotice(null), 5000);
-      return;
-    }
-    if (balance < pkg.amount) {
-      setNotice(
-        `رصيدك غير كافي للاشتراك في باقة ${fmt(pkg.amount)} ج.م، اعمل إيداع الأول.`,
-      );
-      window.setTimeout(() => setNotice(null), 6000);
-      return;
-    }
-    const created = subscribe({
-      identifier: user.identifier,
-      amount: pkg.amount,
-      returnAmount: pkg.returnAmount,
-      durationMs: pkg.durationMs,
-    });
-    const newBalance = updateBalance(user.identifier, -pkg.amount);
-    setBalance(newBalance);
-    setSub(created);
-    setNow(Date.now());
-    setNotice(
-      `تم خصم ${fmt(pkg.amount)} ج.م من محفظتك والاشتراك في الباقة، أرباحك هتزيد لحد ${fmt(pkg.returnAmount)} ج.م خلال ${pkg.duration}.`,
-    );
-    window.setTimeout(() => setNotice(null), 6000);
-  }
 
 
   return (
@@ -245,48 +186,23 @@ function MarketPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <Button
+            <button
               type="button"
-              variant={openPackages === "small" ? "default" : "secondary"}
-              aria-expanded={openPackages === "small"}
-              onClick={() => setOpenPackages((current) => (current === "small" ? null : "small"))}
-              className="h-auto min-h-14 justify-between whitespace-normal rounded-lg px-4 py-3 text-right font-bold"
+              onClick={() => navigate({ to: "/packages/$group", params: { group: "small" } })}
+              className="flex min-h-14 items-center gap-2 justify-center whitespace-normal rounded-lg bg-secondary px-4 py-3 text-center font-bold transition hover:opacity-90"
             >
-              <span className="flex items-center gap-2">
-                <WalletCards aria-hidden="true" />
-                باقات الاستثمار الصغيرة
-              </span>
-              <ChevronDown
-                aria-hidden="true"
-                className={`transition-transform ${openPackages === "small" ? "rotate-180" : ""}`}
-              />
-            </Button>
-            <Button
+              <WalletCards aria-hidden="true" />
+              باقات الاستثمار الصغيرة
+            </button>
+            <button
               type="button"
-              variant={openPackages === "large" ? "default" : "outline"}
-              aria-expanded={openPackages === "large"}
-              onClick={() => setOpenPackages((current) => (current === "large" ? null : "large"))}
-              className="h-auto min-h-14 justify-between whitespace-normal rounded-lg px-4 py-3 text-right font-bold"
+              onClick={() => navigate({ to: "/packages/$group", params: { group: "large" } })}
+              className="flex min-h-14 items-center gap-2 justify-center whitespace-normal rounded-lg border border-border bg-transparent px-4 py-3 text-center font-bold transition hover:bg-accent"
             >
-              <span className="flex items-center gap-2">
-                <Landmark aria-hidden="true" />
-                باقات الاستثمار الضخمة
-              </span>
-              <ChevronDown
-                aria-hidden="true"
-                className={`transition-transform ${openPackages === "large" ? "rotate-180" : ""}`}
-              />
-            </Button>
+              <Landmark aria-hidden="true" />
+              باقات الاستثمار الضخمة
+            </button>
           </div>
-
-          {openPackages && (
-            <InvestmentPackages
-              group={openPackages}
-              packages={INVESTMENT_PACKAGES[openPackages]}
-              activeAmount={sub?.amount ?? null}
-              onSubscribe={handleSubscribe}
-            />
-          )}
         </div>
       </header>
 
@@ -348,67 +264,6 @@ function MarketPage() {
   );
 }
 
-function InvestmentPackages({
-  group,
-  packages,
-  activeAmount,
-  onSubscribe,
-}: {
-  group: PackageGroup;
-  packages: InvestmentPackage[];
-  activeAmount: number | null;
-  onSubscribe: (pkg: InvestmentPackage) => void;
-}) {
-  const isLarge = group === "large";
-
-  return (
-    <section
-      aria-label={isLarge ? "باقات الاستثمار الضخمة" : "باقات الاستثمار الصغيرة"}
-      className="grid gap-2 rounded-lg border border-border bg-background/95 p-3 shadow-2xl sm:grid-cols-2 lg:grid-cols-4"
-    >
-      {packages.map((item, index) => (
-        <article
-          key={item.amount}
-          className={`relative overflow-hidden rounded-lg border bg-card p-4 ${
-            isLarge ? "border-accent/35" : "border-primary/35"
-          }`}
-        >
-          <div
-            className={`absolute inset-y-0 right-0 w-1 ${isLarge ? "bg-accent" : "bg-primary"}`}
-          />
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs text-muted-foreground">باقة {index + 1}</p>
-              <p className="mt-1 text-xl font-black tabular-nums">{fmt(item.amount)} ج.م</p>
-            </div>
-            <Gem
-              aria-hidden="true"
-              className={isLarge ? "text-accent" : "text-primary"}
-            />
-          </div>
-          <div className="my-3 h-px bg-border" />
-          <p className="text-xs text-muted-foreground">الاستلام المتوقع</p>
-          <p className={`mt-1 text-lg font-black ${isLarge ? "text-accent" : "text-primary"}`}>
-            {fmt(item.returnAmount)} ج.م
-          </p>
-          <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Clock3 aria-hidden="true" className="size-3.5" />
-            خلال {item.duration}
-          </p>
-          <Button
-            type="button"
-            variant={activeAmount === item.amount ? "secondary" : "default"}
-            disabled={activeAmount !== null}
-            onClick={() => onSubscribe(item)}
-            className="mt-3 w-full rounded-lg font-bold"
-          >
-            {activeAmount === item.amount ? "مشترك في الباقة" : "اشتراك في الباقة"}
-          </Button>
-        </article>
-      ))}
-    </section>
-  );
-}
 
 function Stat({
   label,
