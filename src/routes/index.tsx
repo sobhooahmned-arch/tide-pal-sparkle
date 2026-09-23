@@ -223,32 +223,6 @@ function LoginPanel({ onDone }: { onDone: (user: StoredUser) => void }) {
       <div className="mt-5 grid grid-cols-2 gap-2 rounded-xl bg-secondary p-1">
         {(
           [
-            ["signup", "إنشاء حساب"],
-            ["login", "تسجيل دخول"],
-          ] as const
-        ).map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => {
-              setMode(key);
-              setError(null);
-              setInfo(null);
-            }}
-            className={`rounded-lg py-2 text-sm font-semibold transition ${
-              mode === key
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-5 grid grid-cols-2 gap-2 rounded-xl bg-secondary p-1">
-        {(
-          [
             ["email", "البريد الإلكتروني"],
             ["phone", "رقم الموبايل"],
           ] as const
