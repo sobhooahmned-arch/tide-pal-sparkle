@@ -83,13 +83,8 @@ function MarketPage() {
     return () => window.clearInterval(id);
   }, [user]);
 
-  const marketProfit = useMemo(
-    () =>
-      balance <= 0 ? 0 : stocks.reduce((acc, s) => acc + (s.change / 100) * (balance / 6), 0),
-    [stocks, balance],
-  );
-
-  const profit = sub ? currentProfit(sub, now) : marketProfit;
+  // الأرباح لا تتحرك إلا عند الاشتراك في باقة
+  const profit = sub ? currentProfit(sub, now) : 0;
   const subDone = sub ? progressOf(sub, now) >= 1 : false;
 
   if (!user) return null;
